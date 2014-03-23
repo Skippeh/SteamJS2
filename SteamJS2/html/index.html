@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Launcher</title>
+        <script src="js-libs/jQuery-2.0.3.js"></script>
+        <script>
+            $(function () {
+                $("#printFriends").click(function ()
+                {
+                    //steam.getFriends(function (friends)
+                    //{
+                    //    console.log(friends);
+                    //    $("#friends").html("");
+                    //    for (var index in friends)
+                    //    {
+                    //        if (friends[index].relationship == 3)
+                    //            $("#friends").append(friends[index].name + "<br/>");
+                    //    }
+                    //});
+
+                    console.log(typeof steam);
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <input id="printFriends" type="button" value="Print friends" />
+        <div id="friends"></div>
+    </body>
+</html>
