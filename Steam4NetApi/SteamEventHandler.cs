@@ -13,14 +13,21 @@ namespace Steam4NetApi
         private int pipe;
         private ISteamFriends013 steamFriends;
 
-        private readonly Dictionary<int, Action<CallbackMsg_t>> callbacks = new Dictionary<int, Action<CallbackMsg_t>>(); 
+        private readonly Dictionary<int, Action<object>> callbacks = new Dictionary<int, Action<object>>();
+        private readonly Dictionary<int, Type> callbackArgTypes = new Dictionary<int, Type>();
 
         public SteamEventHandler(int pipe, ISteamFriends013 steamFriends)
         {
             this.steamFriends = steamFriends;
             this.pipe = pipe;
 
-            callbacks.Add(FriendChatMsg_t.k_iCallback, OnFriendMessage);
+            AddCallback(FriendChatMsg_t.k_iCallback, typeof (FriendChatMsg_t), OnFriendMessage);
+        }
+
+        private void AddCallback(int messageId, Type messageType, Action<object> callback)
+        {
+            callbacks.Add(messageId, callback);
+            callbackArgTypes.Add(messageId, messageType);
         }
 
         public void HandlePendingCallbacks()
@@ -31,21 +38,23 @@ namespace Steam4NetApi
                 if (callbacks.ContainsKey(message.m_iCallback))
                 {
                     var callback = callbacks[message.m_iCallback];
-                    callback(message);
+
+                    var argMessage = Marshal.PtrToStructure(message.m_pubParam, callbackArgTypes[message.m_iCallback]);
+                    callback(argMessage);
                 }
 
                 Steamworks.FreeLastCallback(pipe);
             }
         }
 
-        private void OnFriendMessage(CallbackMsg_t callbackMsgT)
+        private void OnFriendMessage(object objMessage)
         {
-            var message = (FriendChatMsg_t)Marshal.PtrToStructure(callbackMsgT.m_pubParam, typeof (FriendChatMsg_t));
+            var message = (FriendChatMsg_t)objMessage;
 
             EChatEntryType messageType = default(EChatEntryType);
             var chatMessageBytes = new byte[2048];
             steamFriends.GetFriendMessage(message.m_ulFriendID, (int)message.m_iChatID, chatMessageBytes, ref messageType);
-            var chatMessage = Encoding.UTF8.GetString(chatMessageBytes).TrimEnd((char)0);
+            var chatMessage = Encoding.UTF8.GetString(chatMessageBytes).TrimEnd((char)0); // Todo: can probably optimize this if needed
 
             var sender = OpenSteamApi.GetFriend(message.m_ulSenderID);
 
