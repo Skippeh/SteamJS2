@@ -40,6 +40,10 @@ namespace SteamJS2
                 var sw = new Stopwatch();
                 sw.Start();
                 var objArguments = new List<object>(arguments.Length);
+
+                if (arguments.Length > parameters.Length) // More arguments given than the amount of parameters in method.
+                    throw new TargetParameterCountException();
+
                 for (int i = 0; i < arguments.Length; ++i)
                 {
                     var clrObject = V8Utility.GetCLRObject(arguments[i]);
