@@ -7,9 +7,9 @@ using SteamJS2.JavascriptBindings;
 namespace SteamJS2.Classes.JavascriptBindings.Implementations
 {
     [JavascriptBinding("gc")]
-    public class _JSGC
+    public static class _JSGC
     {
-        public void Collect()
+        public static void Collect()
         {
             GC.Collect();
         }

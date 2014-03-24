@@ -9,19 +9,19 @@ using Xilium.CefGlue;
 namespace SteamJS2.JavascriptBindings.Implementations
 {
     [JavascriptBinding("steamjs")]
-    public class Utils
+    public static class Utils
     {
-        public string getPath(string relativePath)
+        public static string getPath(string relativePath)
         {
             return Path.GetFullPath(relativePath);
         }
 
-        public object test(int returnThis)
+        public static object test(int returnThis)
         {
             return returnThis;
         }
 
-        public void testCallback(object[] test, CefV8Value callback, CefBrowser browser)
+        public static void testCallback(object[] test, CefV8Value callback, CefBrowser browser)
         {
             var context = browser.GetMainFrame().V8Context;
 
@@ -42,7 +42,7 @@ namespace SteamJS2.JavascriptBindings.Implementations
             });
         }
 
-        public List<int> testList()
+        public static List<int> testList()
         {
             return new List<int>() {0, 1, 2, 3};
         }

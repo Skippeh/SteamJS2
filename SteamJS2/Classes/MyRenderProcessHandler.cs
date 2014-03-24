@@ -20,14 +20,15 @@ namespace SteamJS2
         {
             var global = context.GetGlobal();
 
-            foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.GetCustomAttributes(typeof(JavascriptBindingAttribute), true).Length > 0))
+            foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.GetCustomAttributes(typeof (JavascriptBindingAttribute), true).Length > 0))
             {
-                var attribute = (JavascriptBindingAttribute)type.GetCustomAttributes(typeof(JavascriptBindingAttribute), true)[0];
+                var attribute = (JavascriptBindingAttribute)type.GetCustomAttributes(typeof (JavascriptBindingAttribute), true)[0];
                 object instance = null;
+
                 if (!type.IsAbstract) // If not static, create instance.
                     instance = Activator.CreateInstance(type);
 
-                var jsObject = JSGC.Register(CefV8Value.CreateObject(null));
+                CefV8Value jsObject = CefV8Value.CreateObject(null);
 
                 foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public))
                 {
@@ -36,7 +37,10 @@ namespace SteamJS2
 
                 foreach (var method in type.GetMethods())
                 {
-                    jsObject.SetValue(method.Name.ToCamelCase(), CefV8Value.CreateFunction(method.Name, new CefV8HandlerMethodInfo(instance, method, context.GetBrowser())), CefV8PropertyAttribute.ReadOnly);
+                    var methodHandler = new CefV8HandlerMethodInfo(instance, method);
+
+                    CefV8Value cefV8Value = CefV8Value.CreateFunction(method.Name, methodHandler);
+                    jsObject.SetValue(method.Name.ToCamelCase(), cefV8Value, CefV8PropertyAttribute.ReadOnly);
                 }
 
                 global.SetValue(attribute.ObjectName.ToCamelCase(), jsObject, CefV8PropertyAttribute.ReadOnly);

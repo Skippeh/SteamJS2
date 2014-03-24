@@ -108,21 +108,34 @@ namespace SteamJS2.JavascriptBindings.Implementations
             {
                 lock (lockObject)
                 {
-                    var v8Args = new CefV8Value[args.Length];
-
-                    boundCallback.Context.Enter();
-
-                    for (int i = 0; i < v8Args.Length; ++i)
+                    if (!boundCallback.Context.IsValid)
                     {
-                        v8Args[i] = V8Utility.ToV8Value(args[i]);
+                        boundCallback.IsValid = false;
+                        return;
                     }
 
-                    boundCallback.FunctionCallback.ExecuteFunctionWithContext(boundCallback.Context, boundCallback.CallbackThis, v8Args);
+                    try
+                    {
+                        var v8Args = new CefV8Value[args.Length];
 
-                    foreach (var v8arg in v8Args)
-                        v8arg.Dispose();
+                        boundCallback.Context.Enter();
 
-                    boundCallback.Context.Exit();
+                        for (int i = 0; i < v8Args.Length; ++i)
+                        {
+                            v8Args[i] = V8Utility.ToV8Value(args[i]);
+                        }
+
+                        boundCallback.FunctionCallback.ExecuteFunctionWithContext(boundCallback.Context, boundCallback.CallbackThis, v8Args);
+
+                        foreach (var v8arg in v8Args)
+                            v8arg.Dispose();
+
+                        boundCallback.Context.Exit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine("Failed callback: " + ex.Message);
+                    }
                 }
             }
         }

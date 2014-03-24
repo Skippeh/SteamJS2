@@ -5,27 +5,128 @@
         <title>Launcher</title>
         <script src="js-libs/jQuery-2.0.3.js"></script>
         <script>
-            $(function () {
-                $("#printFriends").click(function ()
-                {
-                    //steam.getFriends(function (friends)
-                    //{
-                    //    console.log(friends);
-                    //    $("#friends").html("");
-                    //    for (var index in friends)
-                    //    {
-                    //        if (friends[index].relationship == 3)
-                    //            $("#friends").append(friends[index].name + "<br/>");
-                    //    }
-                    //});
+            $(function()
+            {
+                updateFriendsList();
+                steamids = {};
 
-                    console.log(typeof steam);
+                events.register("steam_chat_message", function(message)
+                {
+                    console.log(message);
+
+                    if (message.type == steam.CHAT_MESSAGE)
+                    {
+                        addMessage(message.sender.name, message.message);
+                    }
+                    else if (message.type == steam.CHAT_TYPING)
+                    {
+                        setStatus(message.sender.name + " is typing...");
+                    }
+                }, null);
+
+                $("#textInput").keydown(function(key)
+                {
+                    if (key.keyCode == 13)
+                    {
+                        submit();
+                    }
                 });
+
+                $("#sendButton").click(function() { submit(); });
             });
+
+            function updateFriendsList()
+            {
+                var friendsElm = $("#friends");
+                friendsElm.html("");
+                steamids = {};
+
+                var friends = steam.getFriends();
+                for (var index in friends)
+                {
+                    var friend = friends[index];
+
+                    if (friend.relationship == steam.RELATIONSHIP_FRIEND && friend.status != steam.STATUS_OFFLINE)
+                    {
+                        var uintSteamId = friend.steamID.convertToUint64();
+                        var name = friend.name;
+                        steamids[uintSteamId] = friend;
+                        console.log(uintSteamId);
+                        friendsElm.append("<option value='" + uintSteamId + "'>" + name + "</option>");
+                    }
+                }
+            }
+
+            function addMessage(name, message)
+            {
+                $("#chatOutput").append($("<span class='chatline name'>" + name + ": </span><span class='chatline message'>" + message + "</span><br/>"));
+            }
+
+            function setStatus(newStatus)
+            {
+                $("#status").text(newStatus);
+            }
+
+            function submit()
+            {
+                var inputElm = $("#textInput");
+                var text = inputElm.val();
+
+                if (text.trim() == "")
+                {
+                    inputElm.val("");
+                    return;
+                }
+
+                var target = steamids[parseInt($("#friends").find(":selected").attr("value"))];
+                console.log(target);
+                target.sendChatMessage(text);
+
+                inputElm.val("");
+            }
         </script>
+        <style>
+            body
+            {
+                margin: 0;
+                padding: 0;
+            }
+            
+             #chatOutput
+             {
+                 width: 100%;
+                 height: 400px;
+                 background-color: #ececec;
+             }
+
+            #chatInput
+            {
+                height: 100px;
+                width: 100%;
+            }
+
+            #chatInput input[type=text]
+            {
+                width: 300px;
+            }
+
+            .chatline.name
+            {
+                font-weight: bold;
+            }
+        </style>
     </head>
     <body>
-        <input id="printFriends" type="button" value="Print friends" />
-        <div id="friends"></div>
+        <div id="chatOutput">
+            
+        </div>
+        <div id="status"></div>
+        <div id="chatInput">
+            <span>Send to </span><select id="friends"></select>
+            <input type="button" value="Update friends list" onclick="updateFriendsList()"/>
+            <br/>
+            <input type="text" id="textInput" />
+            <input type="button" id="sendButton" value="Send"/>
+        </div>
     </body>
 </html>

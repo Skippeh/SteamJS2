@@ -46,8 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChatMessage.cs" />
     <Compile Include="OpenSteamApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SteamEventHandler.cs" />
     <Compile Include="SteamFriend.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

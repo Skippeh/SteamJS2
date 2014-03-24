@@ -41,6 +41,7 @@ namespace SteamJS2
             };
 
             CefRuntime.Initialize(mainArgs, settings, app);
+            SteamEventHandler.StartListening();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -49,12 +50,12 @@ namespace SteamJS2
             {
                 CefRuntime.DoMessageLoopWork();
                 TaskUtility.CheckTasks();
-                JSGC.Update();
             };
 
             Application.Run(new ChromiumForm("file:///" + Path.GetFullPath("html/index.html")));
 
             CefRuntime.Shutdown();
+            OpenSteamApi.Shutdown();
             return 0;
         }
     }

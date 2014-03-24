@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -72,13 +73,13 @@
     <Compile Include="Classes\JavascriptBindings\Implementations\_JSGC.cs" />
     <Compile Include="Classes\JavascriptBindings\InvalidTypeException.cs" />
     <Compile Include="Classes\JavascriptBindings\JavascriptException.cs" />
-    <Compile Include="Classes\JSGC.cs" />
     <Compile Include="Classes\MyApp.cs" />
     <Compile Include="Classes\JavascriptBindings\Implementations\Form.cs" />
     <Compile Include="Classes\JavascriptBindings\Implementations\Steam.cs" />
     <Compile Include="Classes\JavascriptBindings\Implementations\Utils.cs" />
     <Compile Include="Classes\JavascriptBindings\JavascriptBindingAttribute.cs" />
     <Compile Include="Classes\MyRenderProcessHandler.cs" />
+    <Compile Include="Classes\SteamEventHandler.cs" />
     <Compile Include="Classes\TaskUtility.cs" />
     <Compile Include="Classes\V8Utility.cs" />
     <Compile Include="Program.cs" />

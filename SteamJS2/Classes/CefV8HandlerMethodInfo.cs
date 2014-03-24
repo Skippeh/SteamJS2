@@ -19,13 +19,11 @@ namespace SteamJS2
         private MethodInfo method;
         private string methodHead;
         private ParameterInfo[] parameters;
-        private CefBrowser browser;
 
-        public CefV8HandlerMethodInfo(object instance, MethodInfo method, CefBrowser browser)
+        public CefV8HandlerMethodInfo(object instance, MethodInfo method)
         {
             this.instance = instance;
             this.method = method;
-            this.browser = browser;
             methodHead = getMethodHead();
             parameters = method.GetParameters();
         }
@@ -34,6 +32,8 @@ namespace SteamJS2
         {
             exception = null;
             returnValue = null;
+
+            var browser = CefV8Context.GetCurrentContext().GetBrowser();
 
             try
             {
@@ -97,7 +97,7 @@ namespace SteamJS2
                 }
 
                 sw.Stop();
-                Console.WriteLine(sw.Elapsed.TotalMilliseconds + "ms to convert function arguments to CLR.");
+                //Console.WriteLine(sw.Elapsed.TotalMilliseconds + "ms to convert function arguments to CLR.");
 
                 var result = method.Invoke(instance, objArguments.ToArray());
                 returnValue = V8Utility.ToV8Value(result);

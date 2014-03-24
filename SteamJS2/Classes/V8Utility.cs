@@ -41,7 +41,7 @@ namespace SteamJS2
 
             var v8Object = obj as CefV8Value;
             if (v8Object != null)
-                return JSGC.Register(v8Object);
+                return v8Object;
 
             var type = obj.GetType();
 
@@ -62,24 +62,24 @@ namespace SteamJS2
             }
 
             if (numericTypes.Contains(type))
-                return JSGC.Register(CefV8Value.CreateDouble(Convert.ToDouble(obj)));
+                return CefV8Value.CreateDouble(Convert.ToDouble(obj));
 
             if (type.IsEnum)
-                return JSGC.Register(CefV8Value.CreateInt(Convert.ToInt32(obj)));
+                return CefV8Value.CreateInt(Convert.ToInt32(obj));
 
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
-                    return JSGC.Register(CefV8Value.CreateBool((bool)obj));
+                    return CefV8Value.CreateBool((bool)obj);
                 case TypeCode.Char:
                 case TypeCode.String:
-                    return JSGC.Register(CefV8Value.CreateString(obj.ToString()));
+                    return CefV8Value.CreateString(obj.ToString());
                 case TypeCode.DateTime:
-                    return JSGC.Register(CefV8Value.CreateDate((DateTime)obj));
+                    return CefV8Value.CreateDate((DateTime)obj);
                 case TypeCode.Empty:
-                    return JSGC.Register(CefV8Value.CreateUndefined());
+                    return CefV8Value.CreateUndefined();
                 case TypeCode.DBNull:
-                    return JSGC.Register(CefV8Value.CreateNull());
+                    return CefV8Value.CreateNull();
                 case TypeCode.Object:
                     {
                         var jsObject = CefV8Value.CreateObject(null);
@@ -90,10 +90,12 @@ namespace SteamJS2
 
                         foreach (var method in type.GetMethods())
                         {
-                            jsObject.SetValue(method.Name.ToCamelCase(), CefV8Value.CreateFunction(method.Name, new CefV8HandlerMethodInfo(obj, method, CefV8Context.GetCurrentContext().GetBrowser())), CefV8PropertyAttribute.ReadOnly);
+                            var methodHandler = new CefV8HandlerMethodInfo(obj, method);
+
+                            jsObject.SetValue(method.Name.ToCamelCase(), CefV8Value.CreateFunction(method.Name, methodHandler), CefV8PropertyAttribute.ReadOnly);
                         }
 
-                        return JSGC.Register(jsObject);
+                        return jsObject;
                     }
             }
 
