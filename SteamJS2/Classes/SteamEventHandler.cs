@@ -13,7 +13,7 @@ namespace SteamJS2
 
         private static void OnChatMessage(ChatMessage message)
         {
-            JSEvents.Execute("steam_chat_message", message);
+            JSEvents.Execute("steam.chat_message", message);
         }
     }
 }

@@ -10,13 +10,14 @@
                 updateFriendsList();
                 steamids = {};
 
-                events.register("steam_chat_message", function(message)
+                events.register("steam.chat_message", function(message)
                 {
                     console.log(message);
 
                     if (message.type == steam.CHAT_MESSAGE)
                     {
                         addMessage(message.sender.name, message.message);
+                        setStatus("");
                     }
                     else if (message.type == steam.CHAT_TYPING)
                     {
@@ -59,12 +60,12 @@
 
             function addMessage(name, message)
             {
-                $("#chatOutput").append($("<span class='chatline name'>" + name + ": </span><span class='chatline message'>" + message + "</span><br/>"));
+                $("#chatOutput").append($("<span class='chatline name'>" + name.replace(/</g, "&lt;").replace(/>/g, "&gt;") + ": </span><span class='chatline message'>" + message.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</span><br/>"));
             }
 
             function setStatus(newStatus)
             {
-                $("#status").text(newStatus);
+                $("#status").text(newStatus.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
             }
 
             function submit()
