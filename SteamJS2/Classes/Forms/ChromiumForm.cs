@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -12,12 +13,16 @@ namespace SteamJS2.Forms
     public partial class ChromiumForm : Form
     {
         private CefWebBrowser webBrowser;
-        private CefWebBrowser devBrowser;
         private string devBrowserUrl = null;
+        private bool isDeveloperForm;
 
-        public ChromiumForm(string url)
+        private ChromiumForm devForm;
+
+        public ChromiumForm(string url, bool isDeveloperForm = false)
         {
             InitializeComponent();
+
+            this.isDeveloperForm = isDeveloperForm;
 
             webBrowser = new CefWebBrowser();
             webBrowser.StartUrl = url;
@@ -28,40 +33,31 @@ namespace SteamJS2.Forms
                                              //UniversalAccessFromFileUrls = CefState.Enabled,
                                              //FileAccessFromFileUrls = CefState.Enabled
                                          };
-            webBrowser.BrowserCreated += WebBrowserOnBrowserCreated;
-            splitContainer1.Panel1.Controls.Add(webBrowser);
-
-            devBrowser = new CefWebBrowser();
-            devBrowser.StartUrl = "about:blank";
-            devBrowser.Dock = DockStyle.Fill;
-            devBrowser.BrowserCreated += DevBrowserOnBrowserCreated;
-            splitContainer1.Panel2.Controls.Add(devBrowser);
-            splitContainer1.Panel2Collapsed = true;
+            webBrowser.TitleChanged += OnTitleChanged;
+            Controls.Add(webBrowser);
 
             webBrowser.PreviewKeyDown += OnKeyDown;
-            devBrowser.PreviewKeyDown += OnKeyDown;
         }
 
-        private void WebBrowserOnBrowserCreated(object sender, EventArgs e)
+        private void OnTitleChanged(object sender, TitleChangedEventArgs e)
         {
+            Text = e.Title;
         }
 
         private void OnKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             if (e.KeyCode == Keys.F12)
             {
-                if (splitContainer1.Panel2Collapsed)
+                if (isDeveloperForm)
+                {
+                    Hide();
+                    return;
+                }
+
+                if (devForm == null || !devForm.Visible)
                     OpenDevTools();
                 else
                     CloseDevTools();
-            }
-        }
-
-        private void DevBrowserOnBrowserCreated(object sender, EventArgs eventArgs)
-        {
-            if (devBrowserUrl != null)
-            {
-                devBrowser.Browser.GetMainFrame().LoadUrl(devBrowserUrl);
             }
         }
 
@@ -69,20 +65,26 @@ namespace SteamJS2.Forms
         {
             var devToolsUrl = webBrowser.Browser.GetHost().GetDevToolsUrl(true);
 
-            if (devBrowser.Address != devToolsUrl)
+            if (devForm == null)
             {
-                if (devBrowser.Browser != null)
-                    devBrowser.Browser.GetMainFrame().LoadUrl(devToolsUrl);
-                else
-                    devBrowserUrl = devToolsUrl;
+                devForm = new ChromiumForm(devToolsUrl, true);
+                Rectangle resolution = Screen.FromControl(this).Bounds;
+                devForm.Size = new Size((int)(resolution.Width * 0.6f), (int)(resolution.Height * 0.6f));
+                devForm.CenterToScreen();
+                devForm.Show();
             }
-
-            splitContainer1.Panel2Collapsed = false;
+            else
+            {
+                devForm.Show();
+            }
         }
 
         private void CloseDevTools()
         {
-            splitContainer1.Panel2Collapsed = true;
+            if (devForm != null)
+            {
+                devForm.Hide();
+            }
         }
     }
 }
