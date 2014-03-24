@@ -37,6 +37,16 @@ namespace SteamJS2.Forms
             Controls.Add(webBrowser);
 
             webBrowser.PreviewKeyDown += OnKeyDown;
+
+            // Hide form on close if developer form.
+            if (isDeveloperForm)
+            {
+                Closing += (sender, args) =>
+                {
+                    args.Cancel = true;
+                    Hide();
+                };
+            }
         }
 
         private void OnTitleChanged(object sender, TitleChangedEventArgs e)
