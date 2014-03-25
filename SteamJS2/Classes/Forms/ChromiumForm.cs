@@ -13,7 +13,6 @@ namespace SteamJS2.Forms
     public partial class ChromiumForm : Form
     {
         private CefWebBrowser webBrowser;
-        private string devBrowserUrl = null;
         private bool isDeveloperForm;
 
         private ChromiumForm devForm;
@@ -24,6 +23,21 @@ namespace SteamJS2.Forms
 
             this.isDeveloperForm = isDeveloperForm;
 
+            CreateWebBrowser(url);
+
+            // Hide form on close if developer form.
+            if (isDeveloperForm)
+            {
+                Closing += (sender, args) =>
+                {
+                    args.Cancel = true;
+                    Hide();
+                };
+            }
+        }
+
+        private void CreateWebBrowser(string url)
+        {
             webBrowser = new CefWebBrowser();
             webBrowser.StartUrl = url;
             webBrowser.Dock = DockStyle.Fill;
@@ -37,16 +51,6 @@ namespace SteamJS2.Forms
             Controls.Add(webBrowser);
 
             webBrowser.PreviewKeyDown += OnKeyDown;
-
-            // Hide form on close if developer form.
-            if (isDeveloperForm)
-            {
-                Closing += (sender, args) =>
-                {
-                    args.Cancel = true;
-                    Hide();
-                };
-            }
         }
 
         private void OnTitleChanged(object sender, TitleChangedEventArgs e)

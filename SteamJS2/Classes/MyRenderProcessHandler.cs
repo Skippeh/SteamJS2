@@ -13,7 +13,13 @@ namespace SteamJS2
     {
         protected override void OnContextCreated(CefBrowser browser, CefFrame frame, CefV8Context context)
         {
+            Console.WriteLine("ContextCreated");
             LoadJavascript(context);
+        }
+
+        protected override void OnContextReleased(CefBrowser browser, CefFrame frame, CefV8Context context)
+        {
+            // Todo: I think this is a good place to dispose of any CLR -> JS generated objects.
         }
 
         private void LoadJavascript(CefV8Context context)
@@ -28,20 +34,7 @@ namespace SteamJS2
                 if (!type.IsAbstract) // If not static, create instance.
                     instance = Activator.CreateInstance(type);
 
-                CefV8Value jsObject = CefV8Value.CreateObject(null);
-
-                foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public))
-                {
-                    jsObject.SetValue(field.Name.ToCamelCase(), V8Utility.ToV8Value(field.GetValue(instance)), CefV8PropertyAttribute.ReadOnly);
-                }
-
-                foreach (var method in type.GetMethods())
-                {
-                    var methodHandler = new CefV8HandlerMethodInfo(instance, method);
-
-                    CefV8Value cefV8Value = CefV8Value.CreateFunction(method.Name, methodHandler);
-                    jsObject.SetValue(method.Name.ToCamelCase(), cefV8Value, CefV8PropertyAttribute.ReadOnly);
-                }
+                var jsObject = V8Utility.CreateV8Object(instance ?? type);
 
                 global.SetValue(attribute.ObjectName.ToCamelCase(), jsObject, CefV8PropertyAttribute.ReadOnly);
             }

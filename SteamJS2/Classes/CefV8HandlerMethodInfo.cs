@@ -15,23 +15,27 @@ namespace SteamJS2
 {
     public class CefV8HandlerMethodInfo : CefV8Handler
     {
-        private object instance;
         private MethodInfo method;
         private string methodHead;
         private ParameterInfo[] parameters;
 
-        public CefV8HandlerMethodInfo(object instance, MethodInfo method)
+        public CefV8HandlerMethodInfo(MethodInfo method)
         {
-            this.instance = instance;
             this.method = method;
             methodHead = getMethodHead();
             parameters = method.GetParameters();
+        }
+
+        ~CefV8HandlerMethodInfo()
+        {
+            Console.WriteLine("~CefV8HandlerMethodInfo " + method.Name);
         }
 
         protected override bool Execute(string name, CefV8Value obj, CefV8Value[] arguments, out CefV8Value returnValue, out string exception)
         {
             exception = null;
             returnValue = null;
+            object instance = ((FunctionUserData)obj.GetUserData()).Instance;
 
             var browser = CefV8Context.GetCurrentContext().GetBrowser();
 

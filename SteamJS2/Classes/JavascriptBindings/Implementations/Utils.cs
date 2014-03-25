@@ -46,5 +46,10 @@ namespace SteamJS2.JavascriptBindings.Implementations
         {
             return new List<int>() {0, 1, 2, 3};
         }
+
+        public static void breakpoint()
+        {
+            ;
+        }
     }
 }

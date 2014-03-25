@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SteamJS2.Extensions;
 using SteamJS2.JavascriptBindings;
 using Xilium.CefGlue;
@@ -14,7 +15,7 @@ namespace SteamJS2
     public static class V8Utility
     {
         private static readonly HashSet<Type> numericTypes = new HashSet<Type>
-        {
+                                                             {
             typeof (Byte), typeof (Decimal),
             typeof (Double), typeof (Int16),
             typeof (Int32), typeof (Int64),
@@ -82,18 +83,23 @@ namespace SteamJS2
                     return CefV8Value.CreateNull();
                 case TypeCode.Object:
                     {
-                        var jsObject = CefV8Value.CreateObject(null);
-                        foreach (var field in type.GetFields())
-                        {
-                            jsObject.SetValue(field.Name.ToCamelCase(), ToV8Value(field.GetValue(obj)), CefV8PropertyAttribute.ReadOnly);
-                        }
-
-                        foreach (var method in type.GetMethods())
-                        {
-                            var methodHandler = new CefV8HandlerMethodInfo(obj, method);
-
-                            jsObject.SetValue(method.Name.ToCamelCase(), CefV8Value.CreateFunction(method.Name, methodHandler), CefV8PropertyAttribute.ReadOnly);
-                        }
+                        var jsObject = CreateV8Object(obj);
+                        //var jsObject = CefV8Value.CreateObject(null);
+                        //foreach (var field in type.GetFields().Where(field => field.DeclaringType == type))
+                        //{
+                        //    jsObject.SetValue(field.Name.ToCamelCase(), ToV8Value(field.GetValue(obj)), CefV8PropertyAttribute.ReadOnly);
+                        //}
+                        //
+                        //var methodInfos = V8Cache.GetMethodInfos(type);
+                        //if (methodInfos == null)
+                        //    methodInfos = V8Cache.SetMethodInfos(type, type.GetMethods().Where(method => method.DeclaringType == type).ToArray());
+                        //
+                        //foreach (var method in methodInfos)
+                        //{
+                        //    var methodHandler = new CefV8HandlerMethodInfo(obj, method);
+                        //
+                        //    jsObject.SetValue(method.Name.ToCamelCase(), CefV8Value.CreateFunction(method.Name, methodHandler), CefV8PropertyAttribute.ReadOnly);
+                        //}
 
                         return jsObject;
                     }
@@ -144,6 +150,40 @@ namespace SteamJS2
                 return result.ToArray();
 
             return result[0];
+        }
+
+        public static CefV8Value CreateV8Object(object instance)
+        {
+            var type = instance is Type ? (Type)instance : instance.GetType();
+            CefV8Value jsObject = CefV8Value.CreateObject(null);
+            jsObject.SetUserData(new FunctionUserData(instance));
+
+            FieldInfo[] fields = V8Cache.GetFieldInfos(type) ?? V8Cache.SetFieldInfos(type, type.GetFields().Where(field => field.DeclaringType == type).ToArray());
+            foreach (var field in fields)
+            {
+                jsObject.SetValue(field.Name.ToCamelCase(), ToV8Value(field.GetValue(instance)), CefV8PropertyAttribute.ReadOnly);
+            }
+
+            MethodInfo[] methods = V8Cache.GetMethodInfos(type) ?? V8Cache.SetMethodInfos(type, type.GetMethods().Where(method => method.DeclaringType == type).ToArray());
+            foreach (var method in methods)
+            {
+                var methodHandler = V8Cache.GetMethodHandler(method) ?? V8Cache.SetMethodHandler(method, new CefV8HandlerMethodInfo(method));
+
+                CefV8Value v8Function = CefV8Value.CreateFunction(method.Name, methodHandler);
+                jsObject.SetValue(method.Name.ToCamelCase(), v8Function, CefV8PropertyAttribute.ReadOnly);
+            }
+
+            return jsObject;
+        }
+    }
+
+    public class FunctionUserData : CefUserData
+    {
+        public readonly object Instance;
+
+        public FunctionUserData(object instance)
+        {
+            Instance = instance;
         }
     }
 }

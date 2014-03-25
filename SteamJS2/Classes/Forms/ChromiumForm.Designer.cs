@@ -28,7 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.destroyBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reCreateBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SuspendLayout();
+            // 
+            // destroyBrowserToolStripMenuItem
+            // 
+            this.destroyBrowserToolStripMenuItem.Name = "destroyBrowserToolStripMenuItem";
+            this.destroyBrowserToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // reCreateBrowserToolStripMenuItem
+            // 
+            this.reCreateBrowserToolStripMenuItem.Name = "reCreateBrowserToolStripMenuItem";
+            this.reCreateBrowserToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // ChromiumForm
             // 
@@ -42,6 +54,9 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.ToolStripMenuItem destroyBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reCreateBrowserToolStripMenuItem;
 
     }
 }

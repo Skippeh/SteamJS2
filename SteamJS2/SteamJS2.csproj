@@ -70,7 +70,6 @@
       <DependentUpon>ChromiumForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\JavascriptBindings\Implementations\JSEvents.cs" />
-    <Compile Include="Classes\JavascriptBindings\Implementations\_JSGC.cs" />
     <Compile Include="Classes\JavascriptBindings\InvalidTypeException.cs" />
     <Compile Include="Classes\JavascriptBindings\JavascriptException.cs" />
     <Compile Include="Classes\MyApp.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="Classes\MyRenderProcessHandler.cs" />
     <Compile Include="Classes\SteamEventHandler.cs" />
     <Compile Include="Classes\TaskUtility.cs" />
+    <Compile Include="Classes\V8Cache.cs" />
     <Compile Include="Classes\V8Utility.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
