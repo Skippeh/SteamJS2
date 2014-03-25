@@ -19,7 +19,7 @@ namespace SteamJS2
 
         protected override void OnContextReleased(CefBrowser browser, CefFrame frame, CefV8Context context)
         {
-            // Todo: I think this is a good place to dispose of any CLR -> JS generated objects.
+            Console.WriteLine("OnContextReleased");
         }
 
         private void LoadJavascript(CefV8Context context)

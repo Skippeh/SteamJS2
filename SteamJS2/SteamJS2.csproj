@@ -80,6 +80,7 @@
     <Compile Include="Classes\MyRenderProcessHandler.cs" />
     <Compile Include="Classes\SteamEventHandler.cs" />
     <Compile Include="Classes\TaskUtility.cs" />
+    <Compile Include="Classes\FunctionUserData.cs" />
     <Compile Include="Classes\V8Cache.cs" />
     <Compile Include="Classes\V8Utility.cs" />
     <Compile Include="Program.cs" />

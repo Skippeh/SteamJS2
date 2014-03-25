@@ -37,7 +37,7 @@ namespace SteamJS2
             returnValue = null;
             object instance = ((FunctionUserData)obj.GetUserData()).Instance;
 
-            var browser = CefV8Context.GetCurrentContext().GetBrowser();
+            var frame = CefV8Context.GetCurrentContext().GetFrame();
 
             try
             {
@@ -95,9 +95,9 @@ namespace SteamJS2
                     objArguments.Add(clrObject);
                 }
 
-                if (parameters.Length > arguments.Length && parameters[arguments.Length].ParameterType == typeof (CefBrowser))
+                if (parameters.Length > arguments.Length && parameters[arguments.Length].ParameterType == typeof (CefFrame))
                 {
-                    objArguments.Add(browser);
+                    objArguments.Add(frame);
                 }
 
                 sw.Stop();

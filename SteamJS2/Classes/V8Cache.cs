@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Xilium.CefGlue;
 
@@ -7,9 +8,9 @@ namespace SteamJS2
 {
     internal static class V8Cache
     {
-        private static Dictionary<Type, MethodInfo[]> methodInfos = new Dictionary<Type, MethodInfo[]>();
-        private static Dictionary<Type, FieldInfo[]> fieldInfos = new Dictionary<Type, FieldInfo[]>();
-        private static Dictionary<MethodInfo, CefV8Handler> methodHandlers = new Dictionary<MethodInfo, CefV8Handler>();
+        private readonly static Dictionary<Type, MethodInfo[]> methodInfos = new Dictionary<Type, MethodInfo[]>();
+        private readonly static Dictionary<Type, FieldInfo[]> fieldInfos = new Dictionary<Type, FieldInfo[]>();
+        private readonly static Dictionary<MethodInfo, CefV8Handler> methodHandlers = new Dictionary<MethodInfo, CefV8Handler>();
 
         public static MethodInfo[] GetMethodInfos(Type type)
         {

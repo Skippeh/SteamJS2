@@ -13,5 +13,10 @@ namespace Steam4NetApi
         {
             OpenSteamApi.SendFriendMessage(SteamID, message);
         }
+
+        public override string ToString()
+        {
+            return "SteamFriend (" + Name + ")";
+        }
     }
 }

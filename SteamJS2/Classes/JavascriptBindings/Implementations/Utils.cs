@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using SteamJS2.Classes;
 using SteamJS2.Classes.JavascriptBindings;
+using SteamJS2.Forms;
 using Xilium.CefGlue;
 
 namespace SteamJS2.JavascriptBindings.Implementations
@@ -21,9 +22,9 @@ namespace SteamJS2.JavascriptBindings.Implementations
             return returnThis;
         }
 
-        public static void testCallback(object[] test, CefV8Value callback, CefBrowser browser)
+        public static void testCallback(object[] test, CefV8Value callback, CefFrame frame)
         {
-            var context = browser.GetMainFrame().V8Context;
+            var context = frame.V8Context;
 
             if (!callback.IsFunction)
                 throw new InvalidTypeException("callback");
@@ -47,9 +48,9 @@ namespace SteamJS2.JavascriptBindings.Implementations
             return new List<int>() {0, 1, 2, 3};
         }
 
-        public static void breakpoint()
+        public static void openWindow()
         {
-            ;
+            new ChromiumForm("www.google.com").Show();
         }
     }
 }

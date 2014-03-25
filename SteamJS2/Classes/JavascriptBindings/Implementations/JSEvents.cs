@@ -16,12 +16,12 @@ namespace SteamJS2.JavascriptBindings.Implementations
             boundEvents = new Dictionary<string, List<BoundCallback>>();
         }
 
-        public static void Register(string name, CefV8Value callback, CefV8Value _this, CefBrowser browser)
+        public static void Register(string name, CefV8Value callback, CefV8Value _this, CefFrame frame)
         {
             if (!boundEvents.ContainsKey(name))
                 boundEvents[name] = new List<BoundCallback>();
 
-            boundEvents[name].Add(new BoundCallback(callback, CefV8Context.GetCurrentContext(), _this, browser));
+            boundEvents[name].Add(new BoundCallback(callback, CefV8Context.GetCurrentContext(), _this));
         }
 
         public static bool Remove(string name, CefV8Value callback)
@@ -66,15 +66,13 @@ namespace SteamJS2.JavascriptBindings.Implementations
         public readonly CefV8Value CallbackThis;
         public readonly CefV8Value FunctionCallback;
         public readonly CefV8Context Context;
-        private readonly CefBrowser browser;
         public bool IsValid { get; private set; }
 
-        public BoundCallback(CefV8Value functionCallback, CefV8Context context, CefV8Value callbackThis, CefBrowser browser)
+        public BoundCallback(CefV8Value functionCallback, CefV8Context context, CefV8Value callbackThis)
         {
             FunctionCallback = functionCallback;
             this.Context = context;
             this.CallbackThis = callbackThis;
-            this.browser = browser;
             IsValid = context.IsValid;
         }
 
