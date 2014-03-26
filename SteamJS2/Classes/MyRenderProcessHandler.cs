@@ -11,15 +11,20 @@ namespace SteamJS2
 {
     internal class MyRenderProcessHandler : CefRenderProcessHandler
     {
+        private readonly List<string> globalTypes = new List<string>();
+
         protected override void OnContextCreated(CefBrowser browser, CefFrame frame, CefV8Context context)
         {
             Console.WriteLine("ContextCreated");
             LoadJavascript(context);
+
+            base.OnContextCreated(browser, frame, context);
         }
 
         protected override void OnContextReleased(CefBrowser browser, CefFrame frame, CefV8Context context)
         {
             Console.WriteLine("OnContextReleased");
+            base.OnContextReleased(browser, frame, context);
         }
 
         private void LoadJavascript(CefV8Context context)
@@ -36,7 +41,9 @@ namespace SteamJS2
 
                 var jsObject = V8Utility.CreateV8Object(instance ?? type);
 
-                global.SetValue(attribute.ObjectName.ToCamelCase(), jsObject, CefV8PropertyAttribute.ReadOnly);
+                var objectName = attribute.ObjectName.ToCamelCase();
+                global.SetValue(objectName, jsObject, CefV8PropertyAttribute.ReadOnly);
+                globalTypes.Add(objectName);
             }
         }
     }

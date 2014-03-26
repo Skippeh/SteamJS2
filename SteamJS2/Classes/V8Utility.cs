@@ -135,16 +135,16 @@ namespace SteamJS2
             return result[0];
         }
 
-        public static CefV8Value CreateV8Object(object instance)
+        public static CefV8Value CreateV8Object(object instanceOrType)
         {
-            var type = instance is Type ? (Type)instance : instance.GetType();
+            var type = instanceOrType is Type ? (Type)instanceOrType : instanceOrType.GetType();
             CefV8Value jsObject = CefV8Value.CreateObject(null);
-            jsObject.SetUserData(new FunctionUserData(instance, jsObject));
+            jsObject.SetUserData(new FunctionUserData(instanceOrType));
 
             FieldInfo[] fields = V8Cache.GetFieldInfos(type) ?? V8Cache.SetFieldInfos(type, type.GetFields().Where(field => field.DeclaringType == type).ToArray());
             foreach (var field in fields)
             {
-                jsObject.SetValue(field.Name.ToCamelCase(), ToV8Value(field.GetValue(instance)), CefV8PropertyAttribute.ReadOnly);
+                jsObject.SetValue(field.Name.ToCamelCase(), ToV8Value(field.GetValue(instanceOrType)), CefV8PropertyAttribute.ReadOnly);
             }
 
             MethodInfo[] methods = V8Cache.GetMethodInfos(type) ?? V8Cache.SetMethodInfos(type, type.GetMethods().Where(method => method.DeclaringType == type).ToArray());

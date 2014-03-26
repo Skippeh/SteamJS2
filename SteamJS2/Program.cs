@@ -14,8 +14,6 @@ namespace SteamJS2
 {
     static class Program
     {
-        //public static bool IsBrowserProcess;
-
         [STAThread]
         static int Main(string[] args)
         {
@@ -27,10 +25,6 @@ namespace SteamJS2
             CefRuntime.Load();
             var mainArgs = new CefMainArgs(args);
             var app = new MyApp();
-
-            var exitCode = CefRuntime.ExecuteProcess(mainArgs, app);
-            if (exitCode != -1)
-                return exitCode;
 
             var settings = new CefSettings()
             {
